@@ -4,6 +4,8 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  BackHandler,
+  Keyboard,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -47,6 +49,12 @@ export default class Toolbar extends React.Component {
         this.input.blur();
       }
     }
+  }
+
+  componentDidMount() {
+    this.subscription = Keyboard.addListener('keyboardDidHide', () => {
+      this.input.blur();
+    });
   }
 
   setInputRef = ref => {

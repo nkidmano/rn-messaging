@@ -35,9 +35,11 @@ export default class MeasureLayout extends React.Component {
     if (!layout) {
       return <View onLayout={this.handleLayout} style={styles.container} />;
     }
+
     return children(layout);
   }
 }
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,

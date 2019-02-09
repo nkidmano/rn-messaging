@@ -12,6 +12,11 @@ import Status from './components/Status';
 import MessageList from './components/MessageList';
 import Toolbar from './components/Toolbar';
 import ImageGrid from './components/ImageGrid';
+import KeyboardState from './components/KeyboardState';
+import MeasureLayout from './components/MeasureLayout';
+import MessagingContainer, {
+  INPUT_METHOD,
+} from './components/MessagingContainer';
 
 import {
   createImageMessage,
@@ -23,6 +28,7 @@ export default class App extends React.Component {
   state = {
     fullscreenImageId: null,
     isInputFocused: false,
+    inputMethod: INPUT_METHOD.NONE,
     messages: [
       createImageMessage('https://unsplash.it/300/300'),
       createTextMessage('World'),
@@ -94,7 +100,21 @@ export default class App extends React.Component {
 
   /** Toolbar function */
 
-  handlePressToolbarCamera = () => {};
+  handleChangeInputMethod = inputMethod => {
+    this.setState({ inputMethod });
+  };
+
+  handlePressToolbarCamera = () => {
+    const { inputMethod } = this.state;
+
+    this.setState({
+      isInputFocused: false,
+      inputMethod:
+        inputMethod === INPUT_METHOD.CUSTOM
+          ? INPUT_METHOD.NONE
+          : INPUT_METHOD.CUSTOM,
+    });
+  };
 
   // BUG
   handlePressToolbarLocation = () => {
@@ -198,12 +218,27 @@ export default class App extends React.Component {
   );
 
   render() {
+    const { inputMethod } = this.state;
+
     return (
       <View style={styles.container}>
-        <Status />
-        {this.renderMessageList()}
-        {this.renderToolbar()}
-        {this.renderInputMethodEditor()}
+        <MeasureLayout>
+          {layout => (
+            <KeyboardState layout={layout}>
+              {keyboardInfo => (
+                <MessagingContainer
+                  {...keyboardInfo}
+                  inputMethod={inputMethod}
+                  onChangeInputMethod={this.handleChangeInputMethod}
+                  renderInputMethodEditor={this.renderInputMethodEditor}
+                >
+                  {this.renderMessageList()}
+                  {this.renderToolbar()}
+                </MessagingContainer>
+              )}
+            </KeyboardState>
+          )}
+        </MeasureLayout>
         {this.renderFullscreenImage()}
       </View>
     );
